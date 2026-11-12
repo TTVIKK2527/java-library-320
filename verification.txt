@@ -1,0 +1,49 @@
+Verified 2026-11-12 on OpenJDK 21.0.13
+19 model checks PASS.
+CLI: listing, adding, search, lending, duplicate lending, available filter, return, invalid integer recovery, magazine loan and EOF checks PASS.
+
+Actual commits:
+32570a7 Add encapsulated library items and polymorphic loan periods
+aa4a7e5 Add catalog lookup search sorting and lending operations
+ad0e127 Add Estonian console menu and recoverable input errors
+8aceb72 Test lending errors filtering sorting and catalog integrity
+c36068c Document rubric mapping startup limitations and defense practice
+
+CLI output:
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: M1 | Eesti Loodus | Ajakiri nr 10 | 7 päeva | saadaval
+B1 | Kevade | Raamat: Oskar Luts | 21 päeva | saadaval
+B2 | Rehepapp | Raamat: Andrus Kivirähk | 21 päeva | saadaval
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: ID: Pealkiri: Autor: Raamat lisatud.
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: Pealkiri: B3 | Testiraamat | Raamat: Testautor | 21 päeva | saadaval
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: ID: Laenutatud 21 päevaks.
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: ID: Viga: Teos on juba laenutatud.
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: M1 | Eesti Loodus | Ajakiri nr 10 | 7 päeva | saadaval
+B1 | Kevade | Raamat: Oskar Luts | 21 päeva | saadaval
+B2 | Rehepapp | Raamat: Andrus Kivirähk | 21 päeva | saadaval
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: ID: Tagastatud.
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: ID: Pealkiri: Number: Viga: number peab olema täisarv.
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: ID: Pealkiri: Number: Ajakiri lisatud.
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: ID: Laenutatud 7 päevaks.
+
+1 Kõik | 2 Otsi | 3 Saadaval | 4 Laenuta | 5 Tagasta | 6 Lisa raamat | 7 Lisa ajakiri | 0 Välju
+Valik: Head aega! Andmed olid ainult selle käivituse mälus.
