@@ -37,4 +37,12 @@ public final class Library {
 
     public void borrow(String id) { findById(id).borrow(); }
     public void returnItem(String id) { findById(id).returnItem(); }
+
+    public List<LibraryItem> searchByAuthor(String query) {
+        if (query == null) throw new IllegalArgumentException("Autor puudub.");
+        String normalized = query.strip().toLowerCase(Locale.ROOT);
+        return search("", false).stream()
+            .filter(item -> item instanceof Book book && book.getAuthor().toLowerCase(Locale.ROOT).contains(normalized))
+            .toList();
+    }
 }
