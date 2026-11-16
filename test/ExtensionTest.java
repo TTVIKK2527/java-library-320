@@ -1,0 +1,29 @@
+public final class ExtensionTest {
+    public static void main(String[] args) {
+        Library library = new Library();
+        library.add(new Book("B1", "Kevade", "Oskar Luts"));
+        library.add(new Book("B2", "Rehepapp", "Andrus Kivirähk"));
+        library.add(new Magazine("M1", "Oskar Luts", 1));
+        check(library.searchByAuthor(" LUTS ").size() == 1, "Author search ignores case and whitespace");
+        check(library.searchByAuthor("missing").isEmpty(), "Missing author");
+        check(library.searchByAuthor("").size() == 2, "Author filter includes only books");
+        try { library.searchByAuthor(null); throw new AssertionError("Null accepted"); }
+        catch (IllegalArgumentException expected) { }
+        library.borrow("B1");
+        try { library.remove("B1"); throw new AssertionError("Borrowed item removed"); }
+        catch (IllegalStateException expected) { }
+        check(library.findById("B1").isBorrowed(), "Rejected removal preserves item");
+        library.returnItem("B1");
+        library.remove("B1");
+        check(library.searchByAuthor("Luts").isEmpty(), "Returned item can be removed");
+        try { library.remove("missing"); throw new AssertionError("Unknown removal accepted"); }
+        catch (IllegalArgumentException expected) { }
+        check(library.statistics().total() == 2 && library.statistics().books() == 1
+            && library.statistics().magazines() == 1 && library.statistics().available() == 2, "Counts after removal");
+        library.borrow("B2");
+        check(library.statistics().borrowed() == 1 && library.statistics().available() == 1, "Loan changes statistics");
+        check(new Library().statistics().total() == 0, "Empty catalogue statistics");
+        System.out.println("PASS: extension tests");
+    }
+    private static void check(boolean condition, String message) { if (!condition) throw new AssertionError(message); }
+}
