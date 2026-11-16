@@ -51,4 +51,18 @@ public final class Library {
             .filter(item -> item instanceof Book book && book.getAuthor().toLowerCase(Locale.ROOT).contains(normalized))
             .toList();
     }
+
+    public Statistics statistics() {
+        int borrowed = 0;
+        int books = 0;
+        for (LibraryItem item : items.values()) {
+            if (item.isBorrowed()) borrowed++;
+            if (item instanceof Book) books++;
+        }
+        return new Statistics(items.size(), borrowed, books, items.size() - books);
+    }
+
+    public record Statistics(int total, int borrowed, int books, int magazines) {
+        public int available() { return total - borrowed; }
+    }
 }

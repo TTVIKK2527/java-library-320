@@ -18,6 +18,11 @@ public final class ExtensionTest {
         check(library.searchByAuthor("Luts").isEmpty(), "Returned item can be removed");
         try { library.remove("missing"); throw new AssertionError("Unknown removal accepted"); }
         catch (IllegalArgumentException expected) { }
+        check(library.statistics().total() == 2 && library.statistics().books() == 1
+            && library.statistics().magazines() == 1 && library.statistics().available() == 2, "Counts after removal");
+        library.borrow("B2");
+        check(library.statistics().borrowed() == 1 && library.statistics().available() == 1, "Loan changes statistics");
+        check(new Library().statistics().total() == 0, "Empty catalogue statistics");
         System.out.println("PASS: extension tests");
     }
     private static void check(boolean condition, String message) { if (!condition) throw new AssertionError(message); }
