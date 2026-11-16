@@ -1,48 +1,60 @@
-# #320 — Raamatukogu laenutussüsteem
+# #331 Java raamatukogurakenduse edasiarendus
 
-Väike Java käsurearakendus: teoste loend, pealkirjaotsing, saadaolevate teoste filter, raamatu/ajakirja lisamine, laenutamine ja tagastamine. Alguses on kaks raamatut ja üks ajakiri. Andmed asuvad ainult mälus ja lähtestuvad programmi sulgemisel. Andmebaasi ega välist teeki pole vaja.
-
-AI koostatud lähtekood ja juhend; õpilase iseseisev arusaamine ning praktiline kaitsmine on veel tõendamata. Ära esita kaitsmist sooritatuna selle materjali põhjal.
+See on varasema #320 Java projekti edasiarendus. Algne Git-ajalugu on säilinud.
+Uued funktsioonid on autoripõhine otsing, laenutatud teoste eemaldamise keeld koos
+saadaval teoste eemaldamisega ning kataloogi statistika. Kõik muudatused salvestatakse
+versioonitud UTF-8 faili ja loetakse järgmisel käivitusel tagasi.
 
 ## Käivitamine
 
-Vaja on JDK 17 või uuemat; kontrollitud OpenJDK 21.0.13-ga.
-
-Käivita projekti kaustas:
+Vaja JDK 17+ ning testide jaoks Python 3 standardteeki. IDE-d ja andmebaasi pole vaja.
 
 ```sh
-mkdir -p build
-javac -encoding UTF-8 -d build src/*.java
-java -cp build Main
+./run.sh
+./run.sh /tmp/minu-kataloog.tsv
+./test.sh
 ```
 
-Kontrollid:
+Vaikimisi fail on `data/library.tsv`. Esmakäivituse kolm näidisteost lisatakse ainult
+siis, kui faili veel pole. Olemasolev tühi kataloog ei täitu uuesti näidisandmetega.
+Vigase faili korral rakendus lõpetab ja faili üle ei kirjuta. Salvestusvea korral
+näitab veateadet ning lõpetab, sest viimane mälus tehtud muudatus ei pruugi olla kettal.
 
-```sh
-javac -Xlint:all -encoding UTF-8 -d build src/*.java test/*.java
-java -cp build LibraryTest
-```
+## Arhitektuur
 
-## Ülesehitus ja nõuded
+`LibraryItem` on abstraktsioon; `Book` ja `Magazine` pärivad sellest ning rakendavad
+polümorfseid `loanDays` ja `details` meetodeid. Väljad on kapseldatud. `Library`
+haldab teoseid HashMap-is ja tagastab sorteeritud otsingutulemused. `Main` küsib
+sisendit ning kuvab tulemuse. `LibraryRepository` eraldab salvestuse programmist;
+`FileLibraryRepository` loeb ja kirjutab faili. Sama liidest saaks hiljem rakendada
+andmebaasi jaoks ilma menüü loogikat ümber kirjutamata.
 
-| Nõue | Näide |
+Failisalvestus sobib väikese ühe kasutaja käsurearakenduse jaoks: ei vaja eraldi
+teenust, on kaasaskantav ja testitav ajutise kaustaga. Tekstiväljad kodeeritakse
+Base64-ga, et tabulaator ja reavahetus ei rikuks kirjeid. Base64 ei ole krüpteerimine.
+Kirjutamine käib ajutisse faili ja võimaluse korral atomaarse failivahetusega;
+failisüsteemi toe puudumisel kasutatakse tavalist failivahetust. See ei taga
+samaaegsete eri protsesside kirjutuste kooskõla. Ära ava sama faili mitmes programmis.
+
+## Nõuete kontroll
+
+| Nõue | Teostus |
 |---|---|
-| Vähemalt neli oma klassi | LibraryItem, Book, Magazine, Library, Main |
-| Abstraktsioon | LibraryItem määrab ühise lepingu; otse luua ei saa |
-| Pärilus | Book ja Magazine pärivad LibraryItem-ist |
-| Kapseldamine | private väljad; laenutamise olekut muudavad kontrollitud meetodid |
-| Polümorfism | LibraryItem viite loanDays() annab raamatu jaoks 21, ajakirja jaoks 7 |
-| Kaks kollektsiooni | HashMap ID järgi leidmiseks; ArrayList otsingutulemuste kogumiseks ja sortimiseks |
-| Andmetüübid | int ajakirjanumbriks/laenupäevadeks, boolean olekuks, String ID-ks ja tekstiks |
-| Otsing/filter/sortimine | Pealkirja osaline otsing, saadavuse filter, pealkirja ja ID järgi sortimine |
-| Vigane sisend | Tühjad väljad, korduv ID, vale number, puuduv ID ja vale laenutusolek annavad veateate |
+| Vähemalt kolm uut funktsiooni | Autoripõhine otsing, eemaldamine, statistika |
+| Otsing/filter/sortimine | `searchByAuthor`, olemasolev pealkirjaotsing ja järjestus |
+| Vigane sisend | Laenutatud teose eemaldamine, puuduv ID, vigane andmefail |
+| Püsivus üle taaskäivituse | `FileLibraryRepository`, konsoolitest käivitab Java protsessi kaks korda |
+| Vähemalt kuus olulist testi | Algse 19 kontrolli kõrval salvestus-, laiendus- ja neli konsoolitesti |
+| Vähemalt kuus sisulist commit'i | Selle haru tegelikud salvestuse, otsingu, eemaldamise, statistika, menüü ning dokumentatsiooni/testimise etapid |
 
-HashMap lubab ID järgi tavaliselt keskmiselt konstantse ajaga otsingut; pealkirja osalise otsingu jaoks käiakse kõik teosed läbi. Tulemuste eraldi ArrayList-i muutmine ei kustuta kataloogi. ID on tõstutundlik; pealkirjaotsing ei ole. Laenutatakse eksemplari ID, mitte pealkirja järgi.
+## Kontrollitud 16.11.2026
 
-## Kontrollitud 12.11.2026
+`./test.sh` kompileerib `javac -Xlint:all` kontrolliga ning käivitab kõik testid.
+Algne 19 kontrolli läbib; PersistenceTest ja ExtensionTest läbivad; neli
+päris Java alamprotsessidega konsoolitesti läbivad. Andmete säilimine ja vigase
+faili puutumatus on kontrollitud, mitte ainult README-s kirjeldatud.
 
-19 automaatset kontrolli läbisid: eri laenutähtajad, otsing, järjestus, saadavus, laenutamine/tagastus, korduvad tegevused, puuduv ID, duplikaadi tagasilükkamine ja vigased konstruktorisisendid. Konsoolitöövoo kontrolli tulemused on failis verification.txt. Kaitsmist need ei asenda.
-
-Viis sisulist koostamisetappi salvestati tegelike kohalike commit'idena. Autor on `Codex <codex@localhost>`; see ei ole väide õpilase iseseisvast koodikirjutamisest. Ajalugu näeb käsuga `git log --oneline --reverse`.
-
-GitHubi avaldamine ja Kriidi esitamine ei ole veel tehtud. Kaitsmise harjutused: [DEFENSE.md](DEFENSE.md).
+Git-ajalugu: `git log --oneline feature/331-persistence`. Commit'ide autor on Codex;
+see ei tõenda õppija iseseisvat programmeerimist ega asenda individuaalset kaitsmist.
+Lähteprojekt #320 jääb oma haru ajaloos alles. Avaldamine ja Kriiti esitamine on
+omaette sammud; kaitsmisel tuleb osata koodi selgitada ja ootamatut muudatust teha.
