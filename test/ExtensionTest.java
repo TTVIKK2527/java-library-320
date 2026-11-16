@@ -9,6 +9,15 @@ public final class ExtensionTest {
         check(library.searchByAuthor("").size() == 2, "Author filter includes only books");
         try { library.searchByAuthor(null); throw new AssertionError("Null accepted"); }
         catch (IllegalArgumentException expected) { }
+        library.borrow("B1");
+        try { library.remove("B1"); throw new AssertionError("Borrowed item removed"); }
+        catch (IllegalStateException expected) { }
+        check(library.findById("B1").isBorrowed(), "Rejected removal preserves item");
+        library.returnItem("B1");
+        library.remove("B1");
+        check(library.searchByAuthor("Luts").isEmpty(), "Returned item can be removed");
+        try { library.remove("missing"); throw new AssertionError("Unknown removal accepted"); }
+        catch (IllegalArgumentException expected) { }
         System.out.println("PASS: extension tests");
     }
     private static void check(boolean condition, String message) { if (!condition) throw new AssertionError(message); }

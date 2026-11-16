@@ -38,6 +38,12 @@ public final class Library {
     public void borrow(String id) { findById(id).borrow(); }
     public void returnItem(String id) { findById(id).returnItem(); }
 
+    public void remove(String id) {
+        LibraryItem item = findById(id);
+        if (item.isBorrowed()) throw new IllegalStateException("Laenutatud teost ei saa eemaldada.");
+        items.remove(item.getId());
+    }
+
     public List<LibraryItem> searchByAuthor(String query) {
         if (query == null) throw new IllegalArgumentException("Autor puudub.");
         String normalized = query.strip().toLowerCase(Locale.ROOT);
