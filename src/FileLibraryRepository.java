@@ -18,7 +18,7 @@ public final class FileLibraryRepository implements LibraryRepository {
         Library library = new Library();
         if (!Files.exists(path)) return library;
         List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-        if (lines.isEmpty() || !HEADER.equals(lines.getFirst())) throw new IOException("Vigane faili päis.");
+        if (lines.isEmpty() || !HEADER.equals(lines.get(0))) throw new IOException("Vigane faili päis.");
         for (int index = 1; index < lines.size(); index++) {
             try {
                 String[] fields = lines.get(index).split("\t", -1);
